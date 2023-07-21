@@ -61,7 +61,7 @@ win.mouseVisible = False
 fixation = visual.TextStim(win, text="+", height=2)
 
 #waiting for trigger
-ready_screen = visual.TextStim(win, text="Please wait for the practice to begin", height=1.5)
+ready_screen = visual.TextStim(win, text="Please wait for the experiment to begin", height=1.5)
 
 #end of run Screen
 run_over_screen = visual.TextStim(win, text="You have completed the first run of Let's Make a Deal!", height=1.5)
@@ -71,19 +71,22 @@ pictureStim =  visual.ImageStim(win, pos=(0,3.5),size=(6.65,6.65))
 cueStim = visual.ImageStim(win,pos=(0,3.5),size = (6.65,6.65))
 sampleStim1 = visual.ImageStim(win,pos=(-6,-2),size = (6.65,6.65))
 sampleStim2 = visual.ImageStim(win,pos=(6,-2),size = (6.65,6.65))
-sampleStim3 = visual.ImageStim(win,pos=(12,-2),size = (6.65,6.65))
+sampleStim3 = visual.ImageStim(win,pos=(-14,-2),size = (6.65,6.65))
+sampleStim4 = visual.ImageStim(win,pos=(14,-2),size = (6.65,6.65))
 #sampleStimText1 = visual.TextStim(win,text = "Accept/reject a proposal\nfrom your partner",pos=(-12,-8), wrapWidth=20, height = 0.8)
-sampleStimText1 = visual.TextStim(win,text = "You propose a split of money.\nYour partner can accept/reject",pos=(-6,-8), wrapWidth=20, height = 0.8)
-sampleStimText2 = visual.TextStim(win,text = "You propose a split of money.\nYour partner cannot respond.",pos = (6,-8),wrapWidth = 20, height = 0.8)
+sampleStimText1 = visual.TextStim(win,text = "Camp Student",pos=(-14,-8), wrapWidth=20, height = 0.8)
+sampleStimText2 = visual.TextStim(win,text = "Camp Faculty",pos = (-6,-8),wrapWidth = 20, height = 0.8)
+sampleStimText3 = visual.TextStim(win,text = "Penn Faculty",pos=(6,-8), wrapWidth=20, height = 0.8)
+sampleStimText4 = visual.TextStim(win,text = "Penn Student",pos = (14,-8),wrapWidth = 20, height = 0.8)
 #resp_text_reject = visual.TextStim(win,text="Reject Offer", pos =(-7,-4.8), height=1, alignHoriz="center")
 #resp_text_accept = visual.TextStim(win,text="Accept Offer", pos =(7,-4.8), height=1, alignHoriz="center")
 offer_text = visual.TextStim(win,pos = (0,-4.0), height=1, alignHoriz="center")
 resp_text_left = visual.TextStim(win, pos =(-7,-5), height=1, alignHoriz="center")
 resp_text_right = visual.TextStim(win, pos =(7,-5), height=1, alignHoriz="center")
 endowment_text = visual.TextStim(win, pos =(0,-3.0), height=1, alignHoriz="center")
-cueStimSqText = visual.TextStim(win,text = "Partner can reject offer",pos=(0,-1.5), wrapWidth=20,height = 1)
-cueStimTriText = visual.TextStim(win,text = "Partner cannot reject offer",pos=(0,-1.5), wrapWidth=20,height = 1)
-cueStimCirText = visual.TextStim(win,text = "You cannot reject offer", pos=(0,-1.5), wrapWidth=20,height=1)
+cueStimSqText = visual.TextStim(win,text = "Decide how much to share",pos=(0,-1.5), wrapWidth=20,height = 1)
+cueStimTriText = visual.TextStim(win,text = "Decide how much to share:",pos=(0,-1.5), wrapWidth=20,height = 1)
+cueStimCirText = visual.TextStim(win,text = "Decide how much to share:", pos=(0,-1.5), wrapWidth=20,height=1)
 
 
 #outcome screen
@@ -100,7 +103,7 @@ instruct_screen7 = visual.TextStim(win, text = 'Do you have any questions?',pos 
 
 
 #exit
-exit_screen = visual.TextStim(win, text='You have reached the end of the practice round.\n\nDo you have any questions?.', pos = (0,1), wrapWidth=20, height = 1.2)
+exit_screen = visual.TextStim(win, text='You have reached the end of the experiment.', pos = (0,1), wrapWidth=20, height = 1.2)
 
 #logging
 expdir = os.getcwd()
@@ -166,15 +169,23 @@ instruct_screen5.draw()
 
 sampleImage1 = os.path.join(expdir,'Images','practice_face.jpg')
 sampleImage2 = os.path.join(expdir,'Images','outgroup_faculty.png')
+sampleImage3 = os.path.join(expdir,'Images','practice_face.jpg')
+sampleImage4 = os.path.join(expdir,'Images','outgroup_faculty.png')
 sampleStim1.setImage(sampleImage1)
 sampleStim2.setImage(sampleImage2)
+sampleStim3.setImage(sampleImage3)
+sampleStim4.setImage(sampleImage4)
 sampleStim1.draw()
 sampleStim2.draw()
+sampleStim3.draw()
+sampleStim4.draw()
 #sampleStimText1.setText(sampleStimText1)
 #sampleStimText2.setText(sampleStimText2)
 #sampleStimText3.setText(sampleStimText3)
 sampleStimText1.draw()
 sampleStimText2.draw()
+sampleStimText3.draw()
+sampleStimText4.draw()
 win.flip()
 event.waitKeys(keyList=('1'))
 

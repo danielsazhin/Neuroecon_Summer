@@ -689,25 +689,29 @@ def do_run(run, trials):
         trials.addData('ITIonset', ITI_onset)
         trials.addData('ITIoffset', ITI_offset)
 
-    # Final Fixation screen after trials completed
+# Final Fixation screen after trials completed
     fixation.draw()
     win.flip()
     #core.wait(final_fixation_dur)
-    #os.chdir(subjdir)
-    #trials.saveAsWideText(fileName)
-    #os.chdir(expdir)
+    os.chdir(subjdir)
+    trials.saveAsWideText(fileName)
+    os.chdir(expdir)
     endTime = 0.01 # not sure if this will take a 0, so giving it 0.01 and making sure it is defined
-    #expected_dur = 60
-    #buffer_dur = 5
-    #total_dur = expected_dur + buffer_dur
-    #if globalClock.getTime() < total_dur:
-    #    endTime = (total_dur - globalClock.getTime())
-    #else:
-    #    endTime = buffer_dur
-    #core.wait(endTime)
-    #print("globalClock.getTime()")
+    expected_dur = 380
+    buffer_dur = 10
+    total_dur = expected_dur + buffer_dur
+    if globalClock.getTime() < total_dur:
+        endTime = (total_dur - globalClock.getTime())
+    else:
+        endTime = buffer_dur
+    core.wait(endTime)
+    print("globalClock.getTime()")
 
-for run, trials in enumerate([trials_run1]):
+    run_over_screen.draw()
+    win.flip()
+    core.wait(4)
+
+for run, trials in enumerate([trials_run1, trials_run2]):
     do_run(run, trials)
 
 # Exit

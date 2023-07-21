@@ -21,7 +21,7 @@ maindir = mydir(1:idcs(end)-1);
 outputdir = '\Behavioral_Analysis\Behavioral_Results\';
 output_folder = [maindir outputdir];
 
-subjects = [10103, 10348, 10374, 10391, 10402, 10436, 10460, 10478, 10496, 10512, 10531, 10541, 10570, 10581, 10584, 10608, 12001, 12002, 12003, 12004];
+subjects = [2002];
 %subjects_debug = [1240,1248]; % These have different column numbers, probably because RAs used psychopy2.
 
 %% Extract data
@@ -54,7 +54,7 @@ if r1 > 0
     for r = 0
         
         % sub-101_task-ultimatum_run-0_raw.csv sub-102_task-ultimatum_run-1_raw.csv
-        fname = fullfile(maindir,'logs',num2str(subj),sprintf('sub-%04d_task-ultimatum_run-%d_raw.csv',subj,r)); % Psychopy taken out from Logs to make work for now.
+        fname = fullfile(maindir,'logs',num2str(subj),sprintf('sub-%04d_task-ultimatum_run-%d_practice_raw.csv',subj,r)); % Psychopy taken out from Logs to make work for now.
         if exist(fname,'file')
             fid = fopen(fname,'r');
         else
@@ -80,46 +80,70 @@ if r1 > 0
     
     % Distribute games per responses
     
-    % Block 1 = UG Prop
-    % Block 2 = DG prop
-    % Block 3 = UG Resp
+    %  # 4 = faculty camp 3 = students camp 2 = Penn faculty 1 = Penn student
+        
     
      for t = 1:length(Endowment)
+     
+        % Block 2 = DG prop
         
-        if Block(t) == 3 % If UG Recipient
-            if response(t) == 2 % If selected left option
-                if round(L_Option(t)) > 0 % This means that the L Option is the offer.
-                    update = [Trial(t), Endowment(t), L_Option(t), 1, L_Option(t), L_Option(t)/Endowment(t)]; %, Endowment(t)/L_Option(t)];
-                    UG_R_accept = [UG_R_accept; update];
+        if Block(t) == 4 % If DG Proposer
+            if response(t) == 2 % If Left button selected
+                if round(L_Option(t) > R_Option(t)) % Is Left button more?
+                    update = [Trial(t), Endowment(t), L_Option(t), 1, L_Option(t)/Endowment(t), R_Option(t)/Endowment(t)];  % Trial number, Endowment, Choice, More, M_Option_Proportion, L_Option_Proportion
+                    DG_FC = [DG_FC; update];
+                else % Therefore it is less.
+                    update = [Trial(t), Endowment(t), L_Option(t), 0, R_Option(t)/Endowment(t), L_Option(t)/Endowment(t)];
+                    DG_FC = [DG_FC; update];
+                end
+            end
+        end
+        
+        if Block(t) == 4
+            if response(t) == 3 % Right option
+                if round(R_Option(t) > L_Option(t)) % Is right option more?
+                    update = [Trial(t), Endowment(t), R_Option(t), 1, R_Option(t)/Endowment(t), L_Option(t)/Endowment(t)];  % Trial number, Endowment, Choice, More, M_Option_Proportion, L_Option_Proportion
+                    DG_FC = [DG_FC; update];
                 else
-                    update = [Trial(t), Endowment(t), L_Option(t), 0, R_Option(t), R_Option(t)/Endowment(t)]; %, R_Option(t), Endowment(t)/R_Option(t)];
-                    UG_R_reject = [UG_R_reject; update];
+                    update = [Trial(t), Endowment(t), R_Option(t), 0, L_Option(t)/Endowment(t), R_Option(t)/Endowment(t)];
+                    DG_FC = [DG_FC; update];
+                end
+            end
+        end
+        
+        
+         if Block(t) == 3 % If DG Proposer
+            if response(t) == 2 % If Left button selected
+                if round(L_Option(t) > R_Option(t)) % Is Left button more?
+                    update = [Trial(t), Endowment(t), L_Option(t), 1, L_Option(t)/Endowment(t), R_Option(t)/Endowment(t)];  % Trial number, Endowment, Choice, More, M_Option_Proportion, L_Option_Proportion
+                    DG_SC = [DG_SC; update];
+                else % Therefore it is less.
+                    update = [Trial(t), Endowment(t), L_Option(t), 0, R_Option(t)/Endowment(t), L_Option(t)/Endowment(t)];
+                    DG_SC = [DG_SC; update];
                 end
             end
         end
         
         if Block(t) == 3
-            if response(t) == 3
-                if round(R_Option(t)) > 0
-                    update = [Trial(t), Endowment(t), R_Option(t), 1, R_Option(t), R_Option(t)/Endowment(t)]; % Trial number, Endowment, Choice, Accept, More_Proportion, Less_Proportion
-                    UG_R_accept = [UG_R_accept; update];
+            if response(t) == 3 % Right option
+                if round(R_Option(t) > L_Option(t)) % Is right option more?
+                    update = [Trial(t), Endowment(t), R_Option(t), 1, R_Option(t)/Endowment(t), L_Option(t)/Endowment(t)];  % Trial number, Endowment, Choice, More, M_Option_Proportion, L_Option_Proportion
+                    DG_SC = [DG_SC; update];
                 else
-                    update = [Trial(t), Endowment(t), R_Option(t), 0, L_Option(t), L_Option(t)/Endowment(t)];
-                    UG_R_reject = [UG_R_reject; update];
+                    update = [Trial(t), Endowment(t), R_Option(t), 0, L_Option(t)/Endowment(t), R_Option(t)/Endowment(t)];
+                    DG_SC = [DG_SC; update];
                 end
             end
         end
-     
-        % Block 2 = DG prop
         
-        if Block(t) == 2 % If DG Proposer
+         if Block(t) == 2 % If DG Proposer
             if response(t) == 2 % If Left button selected
                 if round(L_Option(t) > R_Option(t)) % Is Left button more?
                     update = [Trial(t), Endowment(t), L_Option(t), 1, L_Option(t)/Endowment(t), R_Option(t)/Endowment(t)];  % Trial number, Endowment, Choice, More, M_Option_Proportion, L_Option_Proportion
-                    DG_P = [DG_P; update];
+                    DG_FP = [DG_FP; update];
                 else % Therefore it is less.
                     update = [Trial(t), Endowment(t), L_Option(t), 0, R_Option(t)/Endowment(t), L_Option(t)/Endowment(t)];
-                    DG_P = [DG_P; update];
+                    DG_FP = [DG_FP; update];
                 end
             end
         end
@@ -128,37 +152,38 @@ if r1 > 0
             if response(t) == 3 % Right option
                 if round(R_Option(t) > L_Option(t)) % Is right option more?
                     update = [Trial(t), Endowment(t), R_Option(t), 1, R_Option(t)/Endowment(t), L_Option(t)/Endowment(t)];  % Trial number, Endowment, Choice, More, M_Option_Proportion, L_Option_Proportion
-                    DG_P = [DG_P; update];
+                    DG_FP = [DG_FP; update];
                 else
                     update = [Trial(t), Endowment(t), R_Option(t), 0, L_Option(t)/Endowment(t), R_Option(t)/Endowment(t)];
-                    DG_P = [DG_P; update];
+                    DG_FP = [DG_FP; update];
                 end
             end
         end
-      
-            if Block(t) == 1 % If UG Proposer
-                if response(t) == 2 % If Left button
-                    if round(L_Option(t) > R_Option(t)) % Is Left button more?
-                        update = [Trial(t), Endowment(t), L_Option(t), 1, L_Option(t)/Endowment(t), R_Option(t)/Endowment(t)];  % Trial number, Endowment, Choice, More, M_Option_Proportion, L_Option_Proportion
-                        UG_P = [UG_P; update];
-                    else % Therefore it is less.
-                        update = [Trial(t), Endowment(t), L_Option(t), 0, R_Option(t)/Endowment(t), L_Option(t)/Endowment(t)];
-                        UG_P = [UG_P; update];
-                    end
+        
+         if Block(t) == 1 % If DG Proposer
+            if response(t) == 2 % If Left button selected
+                if round(L_Option(t) > R_Option(t)) % Is Left button more?
+                    update = [Trial(t), Endowment(t), L_Option(t), 1, L_Option(t)/Endowment(t), R_Option(t)/Endowment(t)];  % Trial number, Endowment, Choice, More, M_Option_Proportion, L_Option_Proportion
+                    DG_SP = [DG_SP; update];
+                else % Therefore it is less.
+                    update = [Trial(t), Endowment(t), L_Option(t), 0, R_Option(t)/Endowment(t), L_Option(t)/Endowment(t)];
+                    DG_SP = [DG_SP; update];
                 end
             end
-                
-                if Block(t) == 1
-                    if response(t) == 3 % Right option
-                        if round(R_Option(t) > L_Option(t)) % Is right option more?
-                            update = [Trial(t), Endowment(t), R_Option(t), 1, R_Option(t)/Endowment(t), L_Option(t)/Endowment(t)];  % Trial number, Endowment, Choice, More, M_Option_Proportion, L_Option_Proportion
-                            UG_P = [UG_P; update];
-                        else
-                            update = [Trial(t), Endowment(t), R_Option(t), 0, L_Option(t)/Endowment(t), R_Option(t)/Endowment(t)];
-                            UG_P = [UG_P; update];
-                        end
-                    end
+        end
+        
+        if Block(t) == 1
+            if response(t) == 3 % Right option
+                if round(R_Option(t) > L_Option(t)) % Is right option more?
+                    update = [Trial(t), Endowment(t), R_Option(t), 1, R_Option(t)/Endowment(t), L_Option(t)/Endowment(t)];  % Trial number, Endowment, Choice, More, M_Option_Proportion, L_Option_Proportion
+                    DG_SP = [DG_SP; update];
+                else
+                    update = [Trial(t), Endowment(t), R_Option(t), 0, L_Option(t)/Endowment(t), R_Option(t)/Endowment(t)];
+                    DG_SP = [DG_SP; update];
                 end
+            end
+        end
+        
      end
 end
   
@@ -170,7 +195,7 @@ if r2 > 0
     for r = 1
         
            % sub-101_task-ultimatum_run-0_raw.csv sub-102_task-ultimatum_run-1_raw.csv
-        fname = fullfile(maindir,'logs',num2str(subj),sprintf('sub-%04d_task-ultimatum_run-%d_raw.csv',subj,r)); % Psychopy taken out from Logs to make work for now.
+        fname = fullfile(maindir,'logs',num2str(subj),sprintf('sub-%04d_task-ultimatum_run-%d_practice_raw.csv',subj,r)); % Psychopy taken out from Logs to make work for now.
         if exist(fname,'file')
             fid = fopen(fname,'r');
         else
@@ -202,40 +227,63 @@ if r2 > 0
     
      for t = 1:length(Endowment)
         
-        if Block(t) == 3 % If UG Recipient
-            if response(t) == 2 % If selected left option
-                if round(L_Option(t)) > 0 % This means that the L Option is the offer.
-                    update = [Trial(t), Endowment(t), L_Option(t), 1, L_Option(t), L_Option(t)/Endowment(t)]; %, Endowment(t)/L_Option(t)];
-                    UG_R_accept_2 = [UG_R_accept_2; update];
+        if Block(t) == 4 % If DG Proposer
+            if response(t) == 2 % If Left button selected
+                if round(L_Option(t) > R_Option(t)) % Is Left button more?
+                    update = [Trial(t), Endowment(t), L_Option(t), 1, L_Option(t)/Endowment(t), R_Option(t)/Endowment(t)];  % Trial number, Endowment, Choice, More, M_Option_Proportion, L_Option_Proportion
+                    DG_FC = [DG_FC; update];
+                else % Therefore it is less.
+                    update = [Trial(t), Endowment(t), L_Option(t), 0, R_Option(t)/Endowment(t), L_Option(t)/Endowment(t)];
+                    DG_FC = [DG_FC; update];
+                end
+            end
+        end
+        
+        if Block(t) == 4
+            if response(t) == 3 % Right option
+                if round(R_Option(t) > L_Option(t)) % Is right option more?
+                    update = [Trial(t), Endowment(t), R_Option(t), 1, R_Option(t)/Endowment(t), L_Option(t)/Endowment(t)];  % Trial number, Endowment, Choice, More, M_Option_Proportion, L_Option_Proportion
+                    DG_FC = [DG_FC; update];
                 else
-                    update = [Trial(t), Endowment(t), L_Option(t), 0, R_Option(t), R_Option(t)/Endowment(t)]; %, R_Option(t), Endowment(t)/R_Option(t)];
-                    UG_R_reject_2 = [UG_R_reject_2; update];
+                    update = [Trial(t), Endowment(t), R_Option(t), 0, L_Option(t)/Endowment(t), R_Option(t)/Endowment(t)];
+                    DG_FC = [DG_FC; update];
+                end
+            end
+        end
+        
+        
+         if Block(t) == 3 % If DG Proposer
+            if response(t) == 2 % If Left button selected
+                if round(L_Option(t) > R_Option(t)) % Is Left button more?
+                    update = [Trial(t), Endowment(t), L_Option(t), 1, L_Option(t)/Endowment(t), R_Option(t)/Endowment(t)];  % Trial number, Endowment, Choice, More, M_Option_Proportion, L_Option_Proportion
+                    DG_SC = [DG_SC; update];
+                else % Therefore it is less.
+                    update = [Trial(t), Endowment(t), L_Option(t), 0, R_Option(t)/Endowment(t), L_Option(t)/Endowment(t)];
+                    DG_SC = [DG_SC; update];
                 end
             end
         end
         
         if Block(t) == 3
-            if response(t) == 3
-                if round(R_Option(t)) > 0
-                    update = [Trial(t), Endowment(t), R_Option(t), 1, R_Option(t), R_Option(t)/Endowment(t)]; % Trial number, Endowment, Choice, Accept, More_Proportion, Less_Proportion
-                    UG_R_accept_2 = [UG_R_accept_2; update];
+            if response(t) == 3 % Right option
+                if round(R_Option(t) > L_Option(t)) % Is right option more?
+                    update = [Trial(t), Endowment(t), R_Option(t), 1, R_Option(t)/Endowment(t), L_Option(t)/Endowment(t)];  % Trial number, Endowment, Choice, More, M_Option_Proportion, L_Option_Proportion
+                    DG_SC = [DG_SC; update];
                 else
-                    update = [Trial(t), Endowment(t), R_Option(t), 0, L_Option(t), L_Option(t)/Endowment(t)];
-                    UG_R_reject_2 = [UG_R_reject_2; update];
+                    update = [Trial(t), Endowment(t), R_Option(t), 0, L_Option(t)/Endowment(t), R_Option(t)/Endowment(t)];
+                    DG_SC = [DG_SC; update];
                 end
             end
         end
-     
-        % Block 2 = DG prop
         
-        if Block(t) == 2 % If DG Proposer
+         if Block(t) == 2 % If DG Proposer
             if response(t) == 2 % If Left button selected
                 if round(L_Option(t) > R_Option(t)) % Is Left button more?
                     update = [Trial(t), Endowment(t), L_Option(t), 1, L_Option(t)/Endowment(t), R_Option(t)/Endowment(t)];  % Trial number, Endowment, Choice, More, M_Option_Proportion, L_Option_Proportion
-                    DG_P_2 = [DG_P_2; update];
+                    DG_FP = [DG_FP; update];
                 else % Therefore it is less.
-                    update = [Trial(t), Endowment(t), L_Option(t), 0, R_Option(t)/Endowment(t),L_Option(t)/Endowment(t)];
-                    DG_P_2 = [DG_P_2; update];
+                    update = [Trial(t), Endowment(t), L_Option(t), 0, R_Option(t)/Endowment(t), L_Option(t)/Endowment(t)];
+                    DG_FP = [DG_FP; update];
                 end
             end
         end
@@ -244,37 +292,38 @@ if r2 > 0
             if response(t) == 3 % Right option
                 if round(R_Option(t) > L_Option(t)) % Is right option more?
                     update = [Trial(t), Endowment(t), R_Option(t), 1, R_Option(t)/Endowment(t), L_Option(t)/Endowment(t)];  % Trial number, Endowment, Choice, More, M_Option_Proportion, L_Option_Proportion
-                    DG_P_2 = [DG_P_2; update];
+                    DG_FP = [DG_FP; update];
                 else
                     update = [Trial(t), Endowment(t), R_Option(t), 0, L_Option(t)/Endowment(t), R_Option(t)/Endowment(t)];
-                    DG_P_2 = [DG_P_2; update];
+                    DG_FP = [DG_FP; update];
                 end
             end
         end
-      
-            if Block(t) == 1 % If UG Proposer
-                if response(t) == 2 % If Left button
-                    if round(L_Option(t) > R_Option(t)) % Is Left button more?
-                        update = [Trial(t), Endowment(t), L_Option(t), 1, L_Option(t)/Endowment(t), R_Option(t)/Endowment(t)];  % Trial number, Endowment, Choice, More, M_Option_Proportion, L_Option_Proportion
-                        UG_P_2 = [UG_P_2; update];
-                    else % Therefore it is less.
-                        update = [Trial(t), Endowment(t), L_Option(t), 0, R_Option(t)/Endowment(t), L_Option(t)/Endowment(t)];
-                        UG_P_2 = [UG_P_2; update];
-                    end
+        
+         if Block(t) == 1 % If DG Proposer
+            if response(t) == 2 % If Left button selected
+                if round(L_Option(t) > R_Option(t)) % Is Left button more?
+                    update = [Trial(t), Endowment(t), L_Option(t), 1, L_Option(t)/Endowment(t), R_Option(t)/Endowment(t)];  % Trial number, Endowment, Choice, More, M_Option_Proportion, L_Option_Proportion
+                    DG_SP = [DG_SP; update];
+                else % Therefore it is less.
+                    update = [Trial(t), Endowment(t), L_Option(t), 0, R_Option(t)/Endowment(t), L_Option(t)/Endowment(t)];
+                    DG_SP = [DG_SP; update];
                 end
             end
-                
-                if Block(t) == 1
-                    if response(t) == 3 % Right option
-                        if round(R_Option(t) > L_Option(t)) % Is right option more?
-                            update = [Trial(t), Endowment(t), R_Option(t), 1, R_Option(t)/Endowment(t), L_Option(t)/Endowment(t)];  % Trial number, Endowment, Choice, More, M_Option_Proportion, L_Option_Proportion
-                            UG_P_2 = [UG_P_2; update];
-                        else
-                            update = [Trial(t), Endowment(t), R_Option(t), 0, L_Option(t)/Endowment(t), R_Option(t)/Endowment(t)];
-                            UG_P_2 = [UG_P_2; update];
-                        end
-                    end
+        end
+        
+        if Block(t) == 1
+            if response(t) == 3 % Right option
+                if round(R_Option(t) > L_Option(t)) % Is right option more?
+                    update = [Trial(t), Endowment(t), R_Option(t), 1, R_Option(t)/Endowment(t), L_Option(t)/Endowment(t)];  % Trial number, Endowment, Choice, More, M_Option_Proportion, L_Option_Proportion
+                    DG_SP = [DG_SP; update];
+                else
+                    update = [Trial(t), Endowment(t), R_Option(t), 0, L_Option(t)/Endowment(t), R_Option(t)/Endowment(t)];
+                    DG_SP = [DG_SP; update];
                 end
+            end
+        end
+        
      end
 end
   
@@ -311,22 +360,6 @@ for ii = 1
     end
     end
     
-end
-
-%% Save UG Proposer
-try 
-    
-UG_P_Behavior_r1 = array2table(UG_P(1:end,:),'VariableNames', {'Trial','Endowment','Choice','Decision','More_Prop','Less_Prop'});
-output = ['Subject_' num2str(subj) '_UGP.csv'];
-name = [output_folder,output];
-writetable(UG_P_Behavior_r1, name); % Save as csv file
-end
-
-try 
-UG_P_Behavior_r2 = array2table(UG_P_2(1:end,:),'VariableNames', {'Trial','Endowment','Choice','Decision','More_Prop','Less_Prop'});
-output = ['Subject_' num2str(subj) '_UGP2.csv'];
-name = [output_folder,output];
-writetable(UG_P_Behavior_r2, name); % Save as csv file
 end
 
 %% Save Proposer
